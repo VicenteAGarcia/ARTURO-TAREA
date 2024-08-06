@@ -1,0 +1,52 @@
+---
+title: "Salarios Históricos"
+author: "Vicente Arturo García Colín"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(siebanxicor)
+library(dplyr)
+library(plotly)
+library(DT)
+library(stargazer)
+library(openxlsx)
+# Mi token de Banxico API:
+token="f7d19ae8df57e3737afedd857e479c20733b4c92b7dd05b27aa183490eb664c5"
+#activación de token
+setToken(token)
+```
+# Introducción
+
+Una tabla de datos con valor histórico del salario mínimo general desde el 1 de enero del 2000 al 30 de junio de 2024.
+
+Una gráfica histórica con los datos previamente mencionados.
+
+#Extracción de datos Banxico
+Salarios minimos identifiacdo por = "SL11298"
+```{r}
+salMin = getSeriesData("SL11298", startDate = "2000-01-01", endDate = "2024-07-30")
+salMin=as.data.frame(salMin$SL11298)
+```
+```{r}
+datatable(salMin,
+          colnames=c("Fechas","Salario"),
+          caption="Salarios mínimos"
+          )
+```
+
+## Gráfica de los datos histórios
+interpretación de datos obtenidos a través de gráficos
+
+```{r}
+figMin=plot_ly()
+  figMin=add_trace(figMin, x=~date, y=~value, data=salMin,
+                   name="salario", type="scatter", mode="lines")
+  figMin=layout(figMin,
+                 title = "Salarios mínimos México",
+                 xaxis = list(title = "Fecha"),
+                 yaxis = list(title = "Salario Mínimos"))
+  figMin
+```
